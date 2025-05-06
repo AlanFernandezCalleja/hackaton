@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Alta de Personal</title>
+</head>
+<body>
+  <h2>Alta de Funcionario</h2>
+  <form id="altaForm">
+    <input type="text" name="nombre" placeholder="Nombre completo"><br>
+    <input type="text" name="area" placeholder="Área"><br>
+    <input type="text" name="cargo" placeholder="Cargo"><br>
+    <input type="number" name="salario" placeholder="Salario"><br>
+    <button type="submit">Guardar</button>
+  </form>
+
+  <script>
+    document.getElementById('altaForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const data = Object.fromEntries(formData.entries());
+
+      const response = await fetch("http://localhost/personal-service/index.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
+
+      const result = await response.json();
+      alert("Funcionario creado con ID: " + result.id);
+    });
+  </script>
+</body>
+</html>
