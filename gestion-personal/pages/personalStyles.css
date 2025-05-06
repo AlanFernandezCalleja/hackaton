@@ -1,0 +1,18 @@
+.table-container {
+    margin-top: 20px;
+}
+.header-title {
+    background-color: #343a40;
+    color: white;
+    padding: 15px 0;
+    margin-bottom: 30px;
+    border-radius: 5px;
+}
+.sueldo-positivo {
+    color: #28a745;
+    font-weight: bold;
+}
+.badge-prueba {
+    background-color: #ffc107;
+    color: #212529;
+}

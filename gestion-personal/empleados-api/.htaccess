@@ -1,0 +1,12 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /hackaton/hackaton/gestion-personal/empleados-api/
+    
+    # Redirige las solicitudes a /empleados al controlador
+    RewriteRule ^empleados$ controllers/EmpleadoController.php [L,QSA]
+    
+    # Opcional: Para URLs más limpias
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php?path=$1 [L,QSA]
+</IfModule>
