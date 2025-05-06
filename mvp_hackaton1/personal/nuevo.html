@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuevo Empleado</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        form { max-width: 500px; margin: 0 auto; }
+        label, input, button { display: block; width: 100%; margin-bottom: 10px; }
+        input, button { padding: 8px; }
+    </style>
+</head>
+<body>
+    <h1>Agregar Nuevo Empleado</h1>
+    <form id="formEmpleado">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" required>
+
+        <label for="area">Área:</label>
+        <input type="text" id="area" required>
+
+        <label for="cargo">Cargo:</label>
+        <input type="text" id="cargo">
+
+        <label for="sueldo">Sueldo:</label>
+        <input type="number" id="sueldo" step="0.01" required>
+
+        <label for="tiempo_prueba">Tiempo de Prueba (meses):</label>
+        <input type="number" id="tiempo_prueba" required>
+
+        <label for="fecha_ingreso">Fecha de Ingreso:</label>
+        <input type="date" id="fecha_ingreso" required>
+
+        <button type="submit">Guardar</button>
+    </form>
+
+    <script>
+        document.getElementById('formEmpleado').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const empleado = {
+                nombre: document.getElementById('nombre').value,
+                area: document.getElementById('area').value,
+                cargo: document.getElementById('cargo').value,
+                sueldo: parseFloat(document.getElementById('sueldo').value),
+                tiempo_prueba: parseInt(document.getElementById('tiempo_prueba').value),
+                fecha_ingreso: document.getElementById('fecha_ingreso').value
+            };
+
+            fetch('http://localhost/mvp_hackaton1/personal/apiP.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(empleado)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.mensaje || data.error);
+                window.location.href = 'personal.html'; // Volver a la lista
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>

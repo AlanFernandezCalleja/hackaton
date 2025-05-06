@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Personal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        button {
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .habilitado {
+            color: green;
+            font-weight: bold;
+        }
+
+        .no-habilitado {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Lista de Personal</h1>
+    <button onclick="window.location.href='nuevo.html'">Nuevo Empleado</button>
+    <table id="tablaPersonal">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Área</th>
+                <th>Cargo</th>
+                <th>Fecha de Ingreso</th>
+                <th>Vacaciones</th>
+                <th>Contrato</th>
+                <th>Pago</th>
+                <th>Eliminar</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Los datos se cargarán aquí mediante JavaScript -->
+        </tbody>
+    </table>
+
+    <script>
+        // Función para cargar los datos de la API
+        function cargarEmpleados() {
+            fetch('http://localhost/mvp_hackaton1/personal/apiP.php')
+                .then(response => response.json())
+                .then(data => {
+                    const tabla = document.querySelector('#tablaPersonal tbody');
+                    tabla.innerHTML = '';
+
+                    data.forEach(empleado => {
+                        const fila = document.createElement('tr');
+
+                        // Calcular vacaciones (1 año o más desde la fecha de ingreso)
+                        const fechaIngreso = new Date(empleado.fecha_ingreso);
+                        const hoy = new Date();
+                        const diffTime = hoy - fechaIngreso;
+                        const diffDays = diffTime / (1000 * 60 * 60 * 24);
+                        const vacaciones = diffDays >= 365 ?
+                            '<span class="habilitado">HABILITADO 15 DÍAS</span>' :
+                            '<span class="no-habilitado">NO HABILITADO</span>';
+
+                        fila.innerHTML = `
+                            <td>${empleado.nombre}</td>
+                            <td>${empleado.area}</td>
+                            <td>${empleado.cargo || 'N/A'}</td>
+                            <td>${empleado.fecha_ingreso}</td>
+                            <td>${vacaciones}</td>
+                            <td><button onClick="contratoEmpleado(${empleado.id})">Ver Contrato</button></td>
+                            <td><button onClick="pagoEmpleado(${empleado.id}, '${empleado.nombre}', ${empleado.sueldo})">Generar Pago</button></td>
+                            <td><button onclick="eliminarEmpleado(${empleado.id})">Eliminar</button></td>
+                        `;
+                        tabla.appendChild(fila);
+                    });
+                })
+                .catch(error => console.error('Error al cargar empleados:', error));
+        }
+
+        // Función para eliminar un empleado
+        function eliminarEmpleado(id) {
+            if (confirm('¿Estás seguro de eliminar este empleado?')) {
+                fetch('http://localhost/mvp_hackaton1/personal/apiP.php', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ id: id })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(data.mensaje || data.error);
+                        cargarEmpleados(); // Recargar la tabla
+                    })
+                    .catch(error => console.error('Error al eliminar empleado:', error));
+            }
+        }
+
+        function contratoEmpleado(id) {
+            localStorage.setItem('idEmpleado', id);
+
+            const formData = new FormData();
+            formData.append('id', id);
+
+            fetch('generarReporte.php', {
+                method: 'POST',
+                body: formData
+            })
+                .then(res => res.blob())
+                .then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    window.open(url, '_blank');
+                })
+                .catch(err => console.error('Error al generar el reporte:', err));
+        }
+
+
+        function pagoEmpleado(id, empledo, sueldo) {
+            localStorage.setItem('idEmpleado', id);
+            localStorage.setItem('nombre', empleado);
+            localStorage.setItem('pago', sueldo);
+        }
+
+        // Cargar los empleados al iniciar la página
+        document.addEventListener('DOMContentLoaded', cargarEmpleados);
+    </script>
+</body>
+
+</html>
