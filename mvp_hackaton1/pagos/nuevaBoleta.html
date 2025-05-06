@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nueva Boleta de Pago</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .btn-primary {
+            background-color: #4CAF50;
+            color: white;
+            width: 100%;
+        }
+        .btn-secondary {
+            background-color: #f44336;
+            color: white;
+            width: 100%;
+        }
+        .info-box {
+            background-color: #e9f7ef;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4CAF50;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 15px 0;
+        }
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Nueva Boleta de Pago</h1>
+        
+        <div class="info-box">
+            <strong>Datos del Empleado:</strong>
+            <div id="empleado-info"></div>
+        </div>
+        
+        <form id="formBoleta">
+            <input type="hidden" id="id_personal">
+            
+            <div class="form-group">
+                <label for="nombre">Nombre del Empleado:</label>
+                <input type="text" id="nombre" readonly style="background-color: #f0f0f0;">
+            </div>
+            
+            <div class="form-group">
+                <label for="pago">Monto (S/.):</label>
+                <input type="number" id="pago" step="0.01" min="0" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="fecha_pago">Fecha de Pago:</label>
+                <input type="date" id="fecha_pago" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="metodo_pago">Método de Pago:</label>
+                <select id="metodo_pago" required>
+                    <option value="">Seleccione...</option>
+                    <option value="Transferencia">Transferencia Bancaria</option>
+                    <option value="Efectivo">Efectivo</option>
+                    <option value="Cheque">Cheque</option>
+                </select>
+            </div>
+            
+            <div class="loading" id="loading">
+                <div class="loading-spinner"></div>
+                <p>Procesando boleta...</p>
+            </div>
+            
+            <button type="submit" class="btn btn-primary" id="submit-btn">Generar Boleta</button>
+            <button type="button" class="btn btn-secondary" onclick="volverAPersonal()">Cancelar</button>
+        </form>
+    </div>
+
+    <script>
+        // Cargar datos del empleado desde localStorage al iniciar
+        document.addEventListener('DOMContentLoaded', function() {
+            const idEmpleado = localStorage.getItem('idEmpleado');
+            const nombreEmpleado = localStorage.getItem('nombre');
+            const sueldoEmpleado = localStorage.getItem('pago');
+            
+            if (!idEmpleado || !nombreEmpleado || !sueldoEmpleado) {
+                alert('No se encontraron datos del empleado. Redirigiendo...');
+                volverAPersonal();
+                return;
+            }
+            
+            // Mostrar información del empleado
+            document.getElementById('empleado-info').innerHTML = `
+                <p>ID: ${idEmpleado}</p>
+                <p>Nombre: ${nombreEmpleado}</p>
+                <p>Sueldo Base: S/. ${parseFloat(sueldoEmpleado).toFixed(2)}</p>
+            `;
+            
+            // Llenar formulario
+            document.getElementById('id_personal').value = idEmpleado;
+            document.getElementById('nombre').value = nombreEmpleado;
+            document.getElementById('pago').value = parseFloat(sueldoEmpleado).toFixed(2);
+            
+            // Establecer fecha actual por defecto
+            document.getElementById('fecha_pago').valueAsDate = new Date();
+        });
+        
+        // Función para volver a personal.html
+        function volverAPersonal() {
+            // Limpiar localStorage si es necesario
+            localStorage.removeItem('idEmpleado');
+            localStorage.removeItem('nombre');
+            localStorage.removeItem('pago');
+            
+            // Redirigir correctamente considerando la estructura de carpetas
+            window.location.href = '../personal/personal.html';
+        }
+        
+        // Manejar envío del formulario
+        document.getElementById('formBoleta').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Mostrar loading
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('submit-btn').disabled = true;
+            
+            // Obtener valores del formulario
+            const idPersonal = document.getElementById('id_personal').value;
+            const nombre = document.getElementById('nombre').value;
+            const pago = document.getElementById('pago').value;
+            const fechaPago = document.getElementById('fecha_pago').value;
+            const metodoPago = document.getElementById('metodo_pago').value;
+            
+            // Validaciones básicas
+            if (!idPersonal || !nombre || !pago || !fechaPago || !metodoPago) {
+                alert('Por favor complete todos los campos');
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('submit-btn').disabled = false;
+                return;
+            }
+            
+            if (parseFloat(pago) <= 0) {
+                alert('El monto debe ser mayor a cero');
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('submit-btn').disabled = false;
+                return;
+            }
+            
+            // Crear objeto boleta
+            const boleta = {
+                id_personal: parseInt(idPersonal),
+                nombre: nombre,
+                pago: parseFloat(pago),
+                fecha_pago: fechaPago,
+                metodo_pago: metodoPago
+            };
+            
+            try {
+                // Enviar datos al API
+                const response = await fetch('../pagos/apiPag.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(boleta)
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Error al procesar la solicitud');
+                }
+                
+                // Mostrar mensaje de éxito
+                alert(`Boleta generada exitosamente!\n\nID de boleta: ${data.id || 'N/A'}\n${data.mensaje}`);
+                
+                // Redirigir a personal.html
+                volverAPersonal();
+                
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al crear boleta: ' + error.message);
+                
+                // Ocultar loading
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('submit-btn').disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
