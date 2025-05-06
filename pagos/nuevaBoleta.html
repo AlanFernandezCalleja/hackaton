@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nueva Boleta de Pago</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .habilitado {
+            color: green;
+            font-weight: bold;
+        }
+
+        .no-habilitado {
+            color: red;
+        }
+
+        .logo img {
+            height: 70px;
+            width: auto;
+            display: block;
+        }
+
+        .logo {
+            display: flex;
+            align-items: left;
+            gap: 1.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-links a,
+        .btn-login {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+        }
+
+        .nav-opctions:hover {
+            color: #DA8C5C;
+        }
+
+        body {
+            background-image: url("../images/fondo.avif");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            margin: 0;
+        }
+
+        /* Navbar */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: #1A3A32;
+            color: white;
+            font-size: 25px;
+        }
+
+        .titulo {
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            text-decoration: none;
+            text-align: left;
+        }
+
+        .titulo:hover {
+            color: #DA8C5C;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-links a,
+        .btn-login {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+        }
+
+        .nav-opctions:hover {
+            color: #DA8C5C;
+        }
+
+        .logo img {
+            height: 70px;
+            width: auto;
+            display: block;
+        }
+
+        .logo {
+            display: flex;
+            align-items: left;
+            gap: 1.5rem;
+        }
+
+        .btn-login {
+            background-color: #4CAF87;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-login:hover {
+            background-color: #DA8C5C;
+        }
+
+        /* Contenido Cuerpo */
+        .container {
+            margin: auto;
+            color: #333;
+        }
+
+        /* Título principal */
+        h1 {
+            font-size: 3rem;
+            color: #9ee452;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-weight: 700;
+            border-bottom: 3px solid #9ee452;
+            ;
+            display: inline-block;
+            padding-bottom: 0.5rem;
+        }
+
+        /* Párrafo principal */
+        p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            text-align: justify;
+            margin-bottom: 1rem;
+            color: #4b4a4a;
+        }
+
+        .devices {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .device-card {
+            background-color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border: 1px solid #DA8C5C;
+        }
+
+        .marcaForm {
+            width: 90%;
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            font-size: 2rem;
+            color: #177063;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-weight: 600;
+            border-bottom: 2px solid #23776A;
+            display: inline-block;
+            padding-bottom: 0.3rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 3rem auto;
+            padding: 2rem;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        label {
+            display: block;
+            margin-top: 1.2rem;
+            font-weight: 600;
+            color: #371900;
+        }
+
+        input,
+        select {
+            padding: 0.7rem;
+            width: 100%;
+            margin-top: 0.4rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #70AF4C;
+            outline: none;
+        }
+
+        /* Estilo Tabla */
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: white;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #23776A;
+            color: white;
+        }
+
+        /* ----------- NUEVO: Estilo Formulario ----------- */
+        form {
+            width: 90%;
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #012A2F;
+        }
+
+        form select,
+        form input[type="number"],
+        form textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        form textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        form input[type="radio"] {
+            margin-right: 5px;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF87;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        button:hover {
+            background-color: #3A8A6D;
+        }
+
+        /* Resultado */
+        #resultado {
+            text-align: center;
+            margin-top: 20px;
+            font-weight: bold;
+            color: #012A2F;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            form {
+                width: 95%;
+            }
+
+            .radio-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Nueva Boleta de Pago</h1>
+        
+        <div class="info-box">
+            <strong>Datos del Empleado:</strong>
+            <div id="empleado-info"></div>
+        </div>
+        
+        <form id="formBoleta">
+            <input type="hidden" id="id_personal">
+            
+            <div class="form-group">
+                <label for="nombre">Nombre del Empleado:</label>
+                <input type="text" id="nombre" readonly style="background-color: #f0f0f0;">
+            </div>
+            
+            <div class="form-group">
+                <label for="pago">Monto (S/.):</label>
+                <input type="number" id="pago" step="0.01" min="0" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="fecha_pago">Fecha de Pago:</label>
+                <input type="date" id="fecha_pago" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="metodo_pago">Método de Pago:</label>
+                <select id="metodo_pago" required>
+                    <option value="">Seleccione...</option>
+                    <option value="Transferencia">Transferencia Bancaria</option>
+                    <option value="Efectivo">Efectivo</option>
+                    <option value="Cheque">Cheque</option>
+                </select>
+            </div>
+            
+            <div class="loading" id="loading">
+                <div class="loading-spinner"></div>
+                <p>Procesando boleta...</p>
+            </div>
+            
+            <button type="submit" class="btn btn-primary" id="submit-btn">Generar Boleta</button>
+            <button type="button" class="btn btn-secondary" onclick="volverAPersonal()">Cancelar</button>
+        </form>
+    </div>
+
+    <script>
+        // Cargar datos del empleado desde localStorage al iniciar
+        document.addEventListener('DOMContentLoaded', function() {
+            const idEmpleado = localStorage.getItem('idEmpleado');
+            const nombreEmpleado = localStorage.getItem('nombre');
+            const sueldoEmpleado = localStorage.getItem('pago');
+            
+            if (!idEmpleado || !nombreEmpleado || !sueldoEmpleado) {
+                alert('No se encontraron datos del empleado. Redirigiendo...');
+                volverAPersonal();
+                return;
+            }
+            
+            // Mostrar información del empleado
+            document.getElementById('empleado-info').innerHTML = `
+                <p>ID: ${idEmpleado}</p>
+                <p>Nombre: ${nombreEmpleado}</p>
+                <p>Sueldo Base: S/. ${parseFloat(sueldoEmpleado).toFixed(2)}</p>
+            `;
+            
+            // Llenar formulario
+            document.getElementById('id_personal').value = idEmpleado;
+            document.getElementById('nombre').value = nombreEmpleado;
+            document.getElementById('pago').value = parseFloat(sueldoEmpleado).toFixed(2);
+            
+            // Establecer fecha actual por defecto
+            document.getElementById('fecha_pago').valueAsDate = new Date();
+        });
+        
+        // Función para volver a personal.html
+        function volverAPersonal() {
+            // Limpiar localStorage si es necesario
+            localStorage.removeItem('idEmpleado');
+            localStorage.removeItem('nombre');
+            localStorage.removeItem('pago');
+            
+            // Redirigir correctamente considerando la estructura de carpetas
+            window.location.href = '../personal/personal.html';
+        }
+        
+        // Manejar envío del formulario
+        document.getElementById('formBoleta').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Mostrar loading
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('submit-btn').disabled = true;
+            
+            // Obtener valores del formulario
+            const idPersonal = document.getElementById('id_personal').value;
+            const nombre = document.getElementById('nombre').value;
+            const pago = document.getElementById('pago').value;
+            const fechaPago = document.getElementById('fecha_pago').value;
+            const metodoPago = document.getElementById('metodo_pago').value;
+            
+            // Validaciones básicas
+            if (!idPersonal || !nombre || !pago || !fechaPago || !metodoPago) {
+                alert('Por favor complete todos los campos');
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('submit-btn').disabled = false;
+                return;
+            }
+            
+            if (parseFloat(pago) <= 0) {
+                alert('El monto debe ser mayor a cero');
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('submit-btn').disabled = false;
+                return;
+            }
+            
+            // Crear objeto boleta
+            const boleta = {
+                id_personal: parseInt(idPersonal),
+                nombre: nombre,
+                pago: parseFloat(pago),
+                fecha_pago: fechaPago,
+                metodo_pago: metodoPago
+            };
+            
+            try {
+                // Enviar datos al API
+                const response = await fetch('../pagos/apiPag.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(boleta)
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Error al procesar la solicitud');
+                }
+                
+                // Mostrar mensaje de éxito
+                alert(`Boleta generada exitosamente!\n\nID de boleta: ${data.id || 'N/A'}\n${data.mensaje}`);
+                
+                // Redirigir a personal.html
+                volverAPersonal();
+                
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al crear boleta: ' + error.message);
+                
+                // Ocultar loading
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('submit-btn').disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

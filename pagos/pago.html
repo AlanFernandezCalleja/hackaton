@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Pagos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        button {
+            padding: 8px 12px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .btn-primary {
+            background-color: #4CAF50;
+            color: white;
+            margin-bottom: 20px;
+        }
+        .btn-primary:hover {
+            background-color: #45a049;
+        }
+        .btn-danger {
+            background-color: #f44336;
+            color: white;
+        }
+        .btn-danger:hover {
+            background-color: #d32f2f;
+        }
+        .btn-info {
+            background-color: #2196F3;
+            color: white;
+        }
+        .btn-info:hover {
+            background-color: #0b7dda;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-style: italic;
+            color: #666;
+        }
+        .error {
+            color: #f44336;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Registro de Boletas de Pago</h1>
+        <button class="btn-primary" onclick="window.location.href='nuevaBoleta.html'">Nueva Boleta</button>
+        <table id="tablaBoletas">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>ID Personal</th>
+                    <th>Nombre</th>
+                    <th>Pago (S/.)</th>
+                    <th>Fecha de Pago</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Los datos se cargarán aquí mediante JavaScript -->
+                <tr>
+                    <td colspan="6" class="loading">Cargando datos...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Función para cargar las boletas desde la API
+        function cargarBoletas() {
+            const tabla = document.querySelector('#tablaBoletas tbody');
+            
+            // Mostrar estado de carga
+            tabla.innerHTML = '<tr><td colspan="6" class="loading">Cargando datos...</td></tr>';
+            
+            fetch('apiPag.php')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error en la respuesta del servidor');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    tabla.innerHTML = '';
+                    
+                    if (data.length === 0) {
+                        tabla.innerHTML = '<tr><td colspan="6">No hay boletas registradas</td></tr>';
+                        return;
+                    }
+                    
+                    data.forEach(boleta => {
+                        const fila = document.createElement('tr');
+                        
+                        fila.innerHTML = `
+                            <td>${boleta.id}</td>
+                            <td>${boleta.id_personal}</td>
+                            <td>${boleta.nombre}</td>
+                            <td>S/. ${boleta.pago.toFixed(2)}</td>
+                            <td>${formatearFecha(boleta.fecha_pago)}</td>
+                            <td>
+                                <button class="btn-info" onclick="verDetalle(${boleta.id})">Ver</button>
+                                <button class="btn-danger" onclick="eliminarBoleta(${boleta.id})">Eliminar</button>
+                            </td>
+                        `;
+                        tabla.appendChild(fila);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error al cargar boletas:', error);
+                    tabla.innerHTML = `<tr><td colspan="6" class="error">Error al cargar datos: ${error.message}</td></tr>`;
+                });
+        }
+
+        // Función para formatear fecha
+        function formatearFecha(fecha) {
+            const opciones = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(fecha).toLocaleDateString('es-ES', opciones);
+        }
+
+        // Función para eliminar una boleta
+        function eliminarBoleta(id) {
+            if (confirm('¿Estás seguro de eliminar esta boleta de pago?')) {
+                fetch('apiPag.php', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ id: id })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error al eliminar');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    alert(data.mensaje || "Boleta eliminada correctamente");
+                    cargarBoletas(); // Recargar la tabla
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al eliminar boleta: ' + error.message);
+                });
+            }
+        }
+
+        // Función para ver detalle (puedes implementar redirección o modal)
+        function verDetalle(id) {
+            alert(`Mostrar detalles de boleta ID: ${id}\n(Podrías implementar un modal o página de detalle aquí)`);
+            // localStorage.setItem('boletaId', id);
+            // window.location.href = 'detalleBoleta.html';
+        }
+
+        // Cargar las boletas al iniciar la página
+        document.addEventListener('DOMContentLoaded', cargarBoletas);
+    </script>
+</body>
+</html>
